@@ -32,16 +32,16 @@ fun SettingsScreen(vm: FilteryVm) {
         }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
             Section("CAMERA") {
-                SettingSwitch("Mirror selfies", "Front-camera photos look like the preview (like a mirror).", vm.mirror) { vm.setMirror(it) }
+                SettingSwitch("Mirror selfies", "Front-camera photos look like the preview (like a mirror).", vm.mirror) { vm.applyMirror(it) }
                 Text("Photo quality", color = Brand.Text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-                Seg(listOf("Standard (~3 MP)", "High (up to 12 MP)"), if (vm.photoHigh) 1 else 0) { vm.setPhotoHigh(it == 1) }
+                Seg(listOf("Standard (~3 MP)", "High (up to 12 MP)"), if (vm.photoHigh) 1 else 0) { vm.applyPhotoHigh(it == 1) }
                 Text("Live preview quality", color = Brand.Text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-                Seg(listOf("Fast", "Balanced", "Sharp"), vm.previewQ) { vm.setPreviewQ(it) }
+                Seg(listOf("Fast", "Balanced", "Sharp"), vm.previewQ) { vm.applyPreviewQ(it) }
                 Text("Use Fast if the live preview stutters on a heavy filter. It also sets the video size.", color = Brand.Dim, fontSize = 12.sp)
             }
             Section("SAVING") {
-                SettingSwitch("Copy to the phone gallery", "Photos go to Pictures/Filtery and videos to Movies/Filtery. They always stay in Filtery's own gallery too.", vm.saveToPhone) { vm.setSaveToPhone(it) }
-                SettingSwitch("Record sound in videos", "Uses the microphone while you record.", vm.videoSound) { vm.setVideoSound(it) }
+                SettingSwitch("Copy to the phone gallery", "Photos go to Pictures/Filtery and videos to Movies/Filtery. They always stay in Filtery's own gallery too.", vm.saveToPhone) { vm.applySaveToPhone(it) }
+                SettingSwitch("Record sound in videos", "Uses the microphone while you record.", vm.videoSound) { vm.applyVideoSound(it) }
             }
             Section("UPDATES") {
                 Text("Updates come from GitHub: ${BuildConfig.UPDATE_REPO}", color = Brand.Dim, fontSize = 12.sp)
@@ -51,8 +51,8 @@ fun SettingsScreen(vm: FilteryVm) {
                     SoftButton("Check for updates", Modifier.weight(1f)) { vm.checkUpdate() }
                     GradientButton("Install", Modifier.weight(1f), enabled = vm.updateReady) { vm.installUpdate() }
                 }
-                SettingSwitch("Check automatically", "Looks for a new version when you open Filtery (at most every 6 hours).", vm.autoUpdate) { vm.setAutoUpdate(it) }
-                SettingSwitch("Download on Wi-Fi only", "A new version is downloaded once and kept until you press Install.", vm.wifiOnly) { vm.setWifiOnly(it) }
+                SettingSwitch("Check automatically", "Looks for a new version when you open Filtery (at most every 6 hours).", vm.autoUpdate) { vm.applyAutoUpdate(it) }
+                SettingSwitch("Download on Wi-Fi only", "A new version is downloaded once and kept until you press Install.", vm.wifiOnly) { vm.applyWifiOnly(it) }
             }
             Section("ABOUT") {
                 Text("Filtery ${BuildConfig.VERSION_LABEL}", color = Brand.Text, fontSize = 15.sp, fontWeight = FontWeight.Bold)

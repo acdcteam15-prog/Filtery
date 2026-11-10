@@ -129,7 +129,7 @@ private fun PreviewBox(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -
     val paint = remember { Paint(Paint.FILTER_BITMAP_FLAG) }
     Box(
         modifier.clip(RoundedCornerShape(24.dp)).background(Color.Black).border(1.5.dp, Brand.Border, RoundedCornerShape(24.dp))
-            .pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> if (zoom != 1f) vm.setZoom(vm.zoom * zoom) } },
+            .pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> if (zoom != 1f) vm.applyZoom(vm.zoom * zoom) } },
     ) {
         Canvas(Modifier.fillMaxSize()) {
             val t = vm.tick                  // reading it here redraws the picture on every new frame
@@ -224,7 +224,7 @@ private fun Controls(vm: FilteryVm, owner: LifecycleOwner) {
             } else {
                 Text("Strength", color = Brand.Dim, fontSize = 12.sp, modifier = Modifier.width(58.dp))
                 Slider(
-                    value = vm.intensity, onValueChange = { vm.setIntensity(it) }, onValueChangeFinished = { vm.commitIntensity() }, valueRange = 0.1f..1f,
+                    value = vm.intensity, onValueChange = { vm.applyIntensity(it) }, onValueChangeFinished = { vm.commitIntensity() }, valueRange = 0.1f..1f,
                     modifier = Modifier.weight(1f),
                     colors = SliderDefaults.colors(thumbColor = Brand.Pink, activeTrackColor = Brand.Pink, inactiveTrackColor = Brand.Card2),
                 )
@@ -347,7 +347,7 @@ private fun CaptionDialog(vm: FilteryVm, onClose: () -> Unit) {
                 OutlinedTextField(value = text, onValueChange = { text = it.take(40) }, singleLine = true, placeholder = { Text("e.g. Best day ever!") })
             }
         },
-        confirmButton = { TextButton(onClick = { vm.setCaption(text.trim()); onClose() }) { Text("OK", color = Brand.Pink, fontWeight = FontWeight.Bold) } },
-        dismissButton = { TextButton(onClick = { vm.setCaption(""); onClose() }) { Text("Clear", color = Brand.Dim) } },
+        confirmButton = { TextButton(onClick = { vm.applyCaption(text.trim()); onClose() }) { Text("OK", color = Brand.Pink, fontWeight = FontWeight.Bold) } },
+        dismissButton = { TextButton(onClick = { vm.applyCaption(""); onClose() }) { Text("Clear", color = Brand.Dim) } },
     )
 }

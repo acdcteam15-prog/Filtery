@@ -141,7 +141,7 @@ class FilteryVm(private val app: Application) : AndroidViewModel(app) {
 
     fun toggleGrid() { grid = !grid; prefs.grid = grid }
 
-    fun setZoom(z: Float) {
+    fun applyZoom(z: Float) {
         val max = pipeline.maxZoom.coerceAtMost(8f)
         zoom = z.coerceIn(1f, max.coerceAtLeast(1f))
         pipeline.zoom(zoom)
@@ -161,14 +161,14 @@ class FilteryVm(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun setIntensity(v: Float) {
+    fun applyIntensity(v: Float) {
         intensity = v
         pipeline.intensity = v
     }
 
     fun commitIntensity() { prefs.lastIntensity = intensity }
 
-    fun setCaption(s: String) {
+    fun applyCaption(s: String) {
         caption = s.take(40)
         pipeline.caption = caption
     }
@@ -320,13 +320,13 @@ class FilteryVm(private val app: Application) : AndroidViewModel(app) {
     }
 
     // ------------------------------------------------------------------ settings
-    fun setMirror(v: Boolean) { mirror = v; prefs.mirror = v }
-    fun setSaveToPhone(v: Boolean) { saveToPhone = v; prefs.saveToPhone = v }
-    fun setPhotoHigh(v: Boolean) { photoHigh = v; prefs.photoHigh = v }
-    fun setVideoSound(v: Boolean) { videoSound = v; prefs.videoSound = v }
-    fun setPreviewQ(v: Int) { previewQ = v; prefs.previewQ = v; pipeline.previewQ = v }
-    fun setAutoUpdate(v: Boolean) { autoUpdate = v; prefs.autoUpdate = v }
-    fun setWifiOnly(v: Boolean) { wifiOnly = v; prefs.wifiOnly = v }
+    fun applyMirror(v: Boolean) { mirror = v; prefs.mirror = v }
+    fun applySaveToPhone(v: Boolean) { saveToPhone = v; prefs.saveToPhone = v }
+    fun applyPhotoHigh(v: Boolean) { photoHigh = v; prefs.photoHigh = v }
+    fun applyVideoSound(v: Boolean) { videoSound = v; prefs.videoSound = v }
+    fun applyPreviewQ(v: Int) { previewQ = v; prefs.previewQ = v; pipeline.previewQ = v }
+    fun applyAutoUpdate(v: Boolean) { autoUpdate = v; prefs.autoUpdate = v }
+    fun applyWifiOnly(v: Boolean) { wifiOnly = v; prefs.wifiOnly = v }
 
     // ------------------------------------------------------------------ updates (same flow as Obdy: GitHub Releases, downloaded once and kept)
     fun refreshUpdateState() {
