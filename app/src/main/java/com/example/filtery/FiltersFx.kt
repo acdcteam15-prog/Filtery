@@ -172,7 +172,7 @@ internal fun MutableList<Fx>.addFxFilters() {
             c.save(); c.scale(sc, sc, fx0, fy0); c.drawBitmap(src, 0f, 0f, paintA(0.16f)); c.restore()
         }
     }
-    fx("rainbow", "Rainbow Cycle", "🌈") {
+    fx("rainbowcycle", "Rainbow Cycle", "🌈") {
         tint(hueMatrix((t * 90f) % 360f), 1f)
     }
     fx("disco", "Disco", "🪩") {
