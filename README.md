@@ -1,6 +1,6 @@
 # Filtery
 
-A fun camera app for Android with **152 filters that all work on the phone itself, with no internet**.
+A fun camera app for Android with **174 filters that all work on the phone itself, with no internet**.
 Built the same way as Obdy: Kotlin + Compose, built on GitHub Actions, updated from GitHub Releases.
 
 ```
@@ -22,9 +22,9 @@ camera (CameraX) -> face finder (ML Kit, model inside the app) -> filter engine 
 - **Updates from GitHub** like Obdy: checked when you open the app, downloaded once (Wi-Fi only by default), kept until you press Install. A red dot on the gear shows when one is ready.
 
 ## The filters
-**Funny faces (58)** (follow your face; props are shaded with shadows, gloss and fur strokes so they look like real objects; includes Snapchat-style animal faces, makeup, anime eyes, crowns): Party Hat, Top Hat, King Crown, Cool Shades, Nerd Glasses, Deal With It, Heart Eyes, Clown, Puppy, Kitty, Bunny, Little Devil, Angel, Mustache, Full Beard, Pirate, Reindeer, Flower Crown, Rainbow Mouth, Happy Tears, Fire Eyes, Laser Eyes, Dizzy Stars, Vampire, Hero Mask, Santa, Third Eye, Tongue Out, Big Hair, Viking, Cowboy, Wizard, Chef, Tiger Paint, Freckles & Blush, Butterflies, DJ Headphones, Teddy Bear, Panda, Fox, Lion Mane, Unicorn, Heart Crown, Sparkle Crown, Anime Eyes, Glam Makeup, Glitter Face, Neon Glasses, Robot, Skeleton, Witch, Bubblegum, Nervous Sweat, Angry, Boxer, Crying Rivers, Cupid, Ice Queen
+**Funny faces (65)**: drawn props that follow your face and are matched to your photo's light and colour, plus "real" ones made only from your own pixels (a piece of your face copied somewhere else): Party Hat, Top Hat, King Crown, Cool Shades, Nerd Glasses, Deal With It, Heart Eyes, Clown, Puppy, Kitty, Bunny, Little Devil, Angel, Mustache, Full Beard, Pirate, Reindeer, Flower Crown, Rainbow Mouth, Happy Tears, Fire Eyes, Laser Eyes, Dizzy Stars, Vampire, Hero Mask, Santa, Third Eye, Tongue Out, Big Hair, Viking, Cowboy, Wizard, Chef, Tiger Paint, Freckles & Blush, Butterflies, DJ Headphones, Teddy Bear, Panda, Fox, Lion Mane, Unicorn, Heart Crown, Sparkle Crown, Anime Eyes, Glam Makeup, Glitter Face, Neon Glasses, Robot, Skeleton, Witch, Bubblegum, Nervous Sweat, Angry, Boxer, Crying Rivers, Cupid, Ice Queen, Real 3rd Eye, Eyes on Cheeks, Mouth on Forehead, Cyclops, Two Noses, Mini Me, Upside-Down Twin
 
-**Funny warps (29)** (real pixels of your face, bent): Big Head, Pin Head, Big Eyes, Bug Eyes, Tiny Eyes, Big Nose, Big Mouth, Tiny Mouth, Chipmunk, Alien Head, Long Chin, Cone Head, Wide Face, Tall & Skinny, Short & Wide, Swirl, Fisheye, Squeeze, Funhouse, Ripple, Melt, Baby Face, Big Smile, Surprised, Frog Eyes, Big Forehead, Long Nose, Bobblehead, Elf Ears
+**Funny warps (44)** (real pixels of your face, bent; some animate): Big Head, Pin Head, Big Eyes, Bug Eyes, Tiny Eyes, Big Nose, Big Mouth, Tiny Mouth, Chipmunk, Alien Head, Long Chin, Cone Head, Wide Face, Tall & Skinny, Short & Wide, Swirl, Fisheye, Squeeze, Funhouse, Ripple, Melt, Baby Face, Big Smile, Surprised, Frog Eyes, Big Forehead, Long Nose, Bobblehead, Elf Ears, Wonky Eyes, Pancake Head, Sausage Head, Duck Face, Sad Face, Sleepy Eyes, Huge Lips, Wide-Set Eyes, Cross-Eyed, Double Swirl, Heartbeat Head, Jello Face, Rubber Face, Mega Mouth, Pointy Chin
 
 **Fun effects (24)**: Cartoon, Comic Book, Glitch, Old VHS, Pixelate, Censored, Heat Vision, Night Vision, X-Ray, Kaleidoscope, Mirror Left, Mirror Right, Mirror Top, Mirror x4, Ghost Twins, Zoom Burst, Rainbow Cycle, Disco, Negative, Drunk, Old Age, Zombie, Beauty Smooth, Movie Glow
 

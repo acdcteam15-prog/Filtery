@@ -12,6 +12,7 @@ import android.graphics.Path
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RadialGradient
+import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
@@ -51,6 +52,17 @@ class FxEngine {
     private var verts = FloatArray(0)
     private val tmpBmps = HashMap<Int, Bitmap>()
     private val luts = HashMap<String, IntArray>()
+    private var layerBmp: Bitmap? = null
+    private val usesBase = setOf("devil", "angel", "vampire", "robot", "skeleton", "witch", "angry", "icequeen")
+
+    private fun layer(w: Int, h: Int): Bitmap {
+        val b = layerBmp
+        if (b != null && b.width == w && b.height == h) { b.eraseColor(0); return b }
+        b?.recycle()
+        val n = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        layerBmp = n
+        return n
+    }
 
     fun ints(n: Int, slot: Int): IntArray {
         var a = ia[slot]
@@ -92,8 +104,31 @@ class FxEngine {
         val pf = ArrayList<PFace>(faces.size)
         for (f in faces) pf.add(PFace(f, W, H))
         val kk = if (fx.cat == Cat.FACES) 1f else k.coerceIn(0f, 1f)   // props are always solid; strength is for warps, colours and effects
-        val ctx = FxCtx(this, src, out, c, pf, kk, t)
-        fx.draw(ctx)
+        // Drawn props are painted on their own layer and then matched to the light and colour of the photo, so they sit in the scene.
+        val graded = fx.cat == Cat.FACES && pf.isNotEmpty() && fx.id !in usesBase && !fx.id.startsWith("real_")
+        if (graded) {
+            val lay = layer(out.width, out.height)
+            fx.draw(FxCtx(this, src, out, Canvas(lay), pf, kk, t))
+            val f0 = pf[0]
+            var ar = 0; var ag = 0; var ab = 0; var n = 0
+            for (dy in -1..1) for (dx in -1..1) {
+                val px = (f0.cx + dx * f0.w * 0.2f).toInt().coerceIn(0, src.width - 1)
+                val py = (f0.cy + dy * f0.h * 0.2f).toInt().coerceIn(0, src.height - 1)
+                val p = src.getPixel(px, py)
+                ar += Color.red(p); ag += Color.green(p); ab += Color.blue(p); n++
+            }
+            ar /= n; ag /= n; ab /= n
+            val l = max(1f, (ar + ag + ab) / 3f)
+            val gain = (0.55f + l / 255f * 0.65f).coerceIn(0.62f, 1.1f)
+            val cm = ColorMatrix()
+            cm.setScale(gain * (1f + (ar / l - 1f) * 0.4f), gain * (1f + (ag / l - 1f) * 0.4f), gain * (1f + (ab / l - 1f) * 0.4f), 1f)
+            val gp = Paint(Paint.FILTER_BITMAP_FLAG)
+            gp.colorFilter = ColorMatrixColorFilter(cm)
+            c.drawBitmap(lay, 0f, 0f, gp)
+        } else {
+            val ctx = FxCtx(this, src, out, c, pf, kk, t)
+            fx.draw(ctx)
+        }
         if (!caption.isNullOrBlank()) drawCaption(c, out.width, out.height, caption)
     }
 
@@ -479,5 +514,24 @@ class FxCtx(
         Canvas(mid).drawBitmap(src, null, RectF(0f, 0f, mid.width.toFloat(), mid.height.toFloat()), p)
         Canvas(small).drawBitmap(mid, null, RectF(0f, 0f, small.width.toFloat(), small.height.toFloat()), p)
         return small
+    }
+
+    /** Copies a round piece of the picture (real pixels, soft edge) to another place, size and angle. */
+    fun patch(sx: Float, sy: Float, r: Float, dx: Float, dy: Float, scale: Float, rot: Float = 0f) {
+        val size = max(8, (2f * r).toInt())
+        val tb = e.smallBitmap(2, size, size)
+        tb.eraseColor(0)
+        val tc = Canvas(tb)
+        val l = (sx - r).toInt(); val t0 = (sy - r).toInt()
+        val srcRect = Rect(l.coerceIn(0, w - 2), t0.coerceIn(0, h - 2), (l + size).coerceIn(1, w), (t0 + size).coerceIn(1, h))
+        val dstRect = RectF((srcRect.left - l).toFloat(), (srcRect.top - t0).toFloat(), (srcRect.right - l).toFloat(), (srcRect.bottom - t0).toFloat())
+        tc.drawBitmap(src, srcRect, dstRect, paintA(1f))
+        val mp = Paint(Paint.ANTI_ALIAS_FLAG)
+        mp.shader = RadialGradient(size / 2f, size / 2f, size / 2f, intArrayOf(Color.BLACK, Color.BLACK, Color.TRANSPARENT), floatArrayOf(0f, 0.62f, 1f), Shader.TileMode.CLAMP)
+        mp.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+        tc.drawRect(0f, 0f, size.toFloat(), size.toFloat(), mp)
+        c.save(); c.translate(dx, dy); c.rotate(rot); c.scale(scale, scale)
+        c.drawBitmap(tb, -size / 2f, -size / 2f, paintA(1f))
+        c.restore()
     }
 }
