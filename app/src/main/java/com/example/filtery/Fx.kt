@@ -464,4 +464,14 @@ class FxCtx(
             c.drawLine(x, y, x + (cos(d) * l).toFloat(), y + (sin(d) * l).toFloat(), stroke(col, width * (0.7f + 0.6f * rnd(i, seed + 5)), 0.92f))
         }
     }
+
+    /** A soft, blurred small copy of the whole picture (for skin smoothing, glow). */
+    fun blurredCopy(): Bitmap {
+        val mid = e.smallBitmap(0, max(1, w / 2), max(1, h / 2))
+        val small = e.smallBitmap(1, max(1, w / 6), max(1, h / 6))
+        val p = paintA(1f)
+        Canvas(mid).drawBitmap(src, null, RectF(0f, 0f, mid.width.toFloat(), mid.height.toFloat()), p)
+        Canvas(small).drawBitmap(mid, null, RectF(0f, 0f, small.width.toFloat(), small.height.toFloat()), p)
+        return small
+    }
 }

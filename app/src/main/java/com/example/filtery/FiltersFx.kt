@@ -284,4 +284,31 @@ internal fun MutableList<Fx>.addFxFilters() {
             softOval(f.mx + 0.12f * f.w, f.my + 0.08f * f.w, 0.03f * f.w, 0.12f * f.w, 0xFF8A0A14.toInt(), 0.6f, 0.02f * f.w)
         }
     }
+
+    fx("beauty", "Beauty Smooth", "🌸", true) {
+        val fs = facesOrDefault
+        val soft = blurredCopy()
+        for (f in fs) {
+            val pa = android.graphics.Path()
+            pa.addOval(f.cx - f.w * 0.56f, f.cy - f.h * 0.6f, f.cx + f.w * 0.56f, f.cy + f.h * 0.62f, android.graphics.Path.Direction.CW)
+            c.save(); c.clipPath(pa)
+            c.drawBitmap(soft, null, android.graphics.RectF(0f, 0f, wf, hf), paintA(0.7f * k))
+            c.restore()
+            softOval(f.hx(-0.3f * f.w, 0.12f * f.h), f.hy(-0.3f * f.w, 0.12f * f.h), 0.14f * f.w, 0.09f * f.w, 0xFFFF7A90.toInt(), 0.18f, 0.07f * f.w)
+            softOval(f.hx(0.3f * f.w, 0.12f * f.h), f.hy(0.3f * f.w, 0.12f * f.h), 0.14f * f.w, 0.09f * f.w, 0xFFFF7A90.toInt(), 0.18f, 0.07f * f.w)
+        }
+        tint(look(bri = 0.03f, sat = 1.05f), 0.4f * k)
+    }
+    fx("moviglow", "Movie Glow", "🎞️") {
+        glow(0.55f * k, 6)
+        tint(look(sat = 1.1f, con = 1.05f, r = 1.08f, b = 0.94f), 0.5f * k)
+        vignette(0.3f)
+        val fx0 = wf * 0.82f; val fy0 = hf * 0.14f
+        lightBall(fx0, fy0, 0.35f * s, 0xFFFFE0A0.toInt(), 0.7f)
+        for (i in 0 until 6) {
+            val a = Math.toRadians(i * 30.0 + t * 8.0).toFloat()
+            line(fx0 - cos(a) * 0.3f * s, fy0 - sin(a) * 0.3f * s, fx0 + cos(a) * 0.3f * s, fy0 + sin(a) * 0.3f * s, 0.006f * s, 0xFFFFF4D0.toInt(), 0.6f)
+        }
+        lightBall(wf * 0.5f + (fx0 - wf * 0.5f) * -0.6f, hf * 0.5f + (fy0 - hf * 0.5f) * -0.6f, 0.1f * s, 0xFF9AD0FF.toInt(), 0.35f)
+    }
 }

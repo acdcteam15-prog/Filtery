@@ -20,7 +20,7 @@ private fun MutableList<Fx>.fx(id: String, name: String, icon: String, draw: FxC
 }
 
 // ------------------------------------------------------------------------------------------ shared shapes
-private fun FxCtx.heart(x: Float, y: Float, s: Float, a: Float = 1f) {
+internal fun FxCtx.heart(x: Float, y: Float, s: Float, a: Float = 1f) {
     val pa = e.path
     pa.reset()
     pa.moveTo(x, y + 0.55f * s)
@@ -31,7 +31,7 @@ private fun FxCtx.heart(x: Float, y: Float, s: Float, a: Float = 1f) {
     oval(x - 0.4f * s, y - 0.35f * s, 0.2f * s, 0.12f * s, WHITE, 0.55f * a)
 }
 
-private fun FxCtx.drop(x: Float, y: Float, r: Float, a: Float = 1f) {
+internal fun FxCtx.drop(x: Float, y: Float, r: Float, a: Float = 1f) {
     val pa = e.path
     pa.reset()
     pa.moveTo(x, y - 1.8f * r)
@@ -44,7 +44,7 @@ private fun FxCtx.drop(x: Float, y: Float, r: Float, a: Float = 1f) {
     oval(x - 0.35f * r, y - 0.2f * r, 0.2f * r, 0.35f * r, WHITE, 0.85f * a)
 }
 
-private fun FxCtx.flower(x: Float, y: Float, r: Float, petal1: Int, petal2: Int, centre: Int) {
+internal fun FxCtx.flower(x: Float, y: Float, r: Float, petal1: Int, petal2: Int, centre: Int) {
     softOval(x + 0.1f * r, y + 0.2f * r, r * 0.95f, r * 0.8f, BLACK, 0.3f, r * 0.35f)
     for (i in 0 until 6) {
         at(x, y, i * 60f + 15f) { gradOval(0f, -0.6f * r, 0.36f * r, 0.62f * r, petal1, petal2) }
@@ -52,7 +52,7 @@ private fun FxCtx.flower(x: Float, y: Float, r: Float, petal1: Int, petal2: Int,
     gradOval(x, y, 0.3f * r, 0.3f * r, col(0xFFFFE680), centre)
 }
 
-private fun FxCtx.bat(x: Float, y: Float, s: Float, flap: Float) {
+internal fun FxCtx.bat(x: Float, y: Float, s: Float, flap: Float) {
     val w = s * (0.35f + 0.65f * abs(flap))
     val pa = e.path
     pa.reset()
@@ -69,7 +69,7 @@ private fun FxCtx.bat(x: Float, y: Float, s: Float, flap: Float) {
 }
 
 /** A beard that follows the jaw and leaves the mouth free. Drawn in the head's own frame. */
-private fun FxCtx.beard(f: PFace, base: Int, lengthF: Float, count: Int, seed: Int) {
+internal fun FxCtx.beard(f: PFace, base: Int, lengthF: Float, count: Int, seed: Int) {
     val u = f.w; val h = f.h
     at(f.cx, f.cy, f.rot) {
         softOval(0f, 0.6f * h, 0.5f * u, 0.1f * h, BLACK, 0.22f, 0.05f * u)
@@ -89,7 +89,7 @@ private fun FxCtx.beard(f: PFace, base: Int, lengthF: Float, count: Int, seed: I
     }
 }
 
-private fun FxCtx.mustacheFur(f: PFace, base: Int, size: Float, seed: Int) {
+internal fun FxCtx.mustacheFur(f: PFace, base: Int, size: Float, seed: Int) {
     val u = f.w
     at((f.nx + f.mx) / 2f, (f.ny + f.my) / 2f + 0.01f * u, f.rot) {
         val s = size

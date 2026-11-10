@@ -7,6 +7,7 @@ object Filters {
     val all: List<Fx> by lazy {
         val l = ArrayList<Fx>()
         l.addFaceFilters()
+        l.addFaceFilters2()
         l.addWarpFilters()
         l.addFxFilters()
         l.addColorFilters()

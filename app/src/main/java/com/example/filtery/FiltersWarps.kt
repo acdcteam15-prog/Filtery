@@ -176,4 +176,22 @@ internal fun MutableList<Fx>.addWarpFilters() {
             }
         }
     }
+
+    fx("bobblehead", "Bobblehead", "🗿") {
+        val fs = facesOrDefault
+        warp { x, y, d ->
+            for (f in fs) {
+                bump(x, y, f.cx, f.cy - 0.05f * f.h, max(f.w, f.h) * 1.3f, 1.5f * k, d)
+                bump(x, y, f.cx, f.cy + 1.6f * f.h, f.h * 1.1f, -0.55f * k, d)
+            }
+        }
+    }
+    fx("elfears", "Elf Ears", "🧝") {
+        val fs = facesOrDefault
+        warp { x, y, d ->
+            for (f in fs) for (sg in intArrayOf(-1, 1)) {
+                slide(x, y, f.hx(sg * 0.55f * f.w, -0.05f * f.h), f.hy(sg * 0.55f * f.w, -0.05f * f.h), f.w * 0.3f, sg * 0.07f * f.w * k, -0.1f * f.w * k, d)
+            }
+        }
+    }
 }
