@@ -1,0 +1,37 @@
+# Same toolchain as Obdy / Remoty (known to build) plus CameraX and ML Kit face detection.
+[versions]
+agp = "9.5.0"            # needs the Gradle wrapper in this repo (9.8.2) and JDK 17+ (CI uses 21)
+kotlin = "2.4.21"
+core = "1.19.1"
+appcompat = "1.8.0"
+activity = "1.13.0"
+lifecycle = "2.11.0"
+compose = "1.12.1"
+material3 = "1.4.0"
+coroutines = "1.11.0"
+junit = "4.13.2"
+camerax = "1.4.2"
+mlkitface = "16.1.7"       # face detection with the model bundled in the app: works with no internet
+
+[libraries]
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose" }
+compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+junit = { module = "junit:junit", version.ref = "junit" }
+camera-core = { module = "androidx.camera:camera-core", version.ref = "camerax" }
+camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
+camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
+mlkit-face = { module = "com.google.mlkit:face-detection", version.ref = "mlkitface" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

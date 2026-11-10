@@ -1,0 +1,2 @@
+-keep class com.example.filtery.** { *; }
+-keepattributes SourceFile,LineNumberTable,*Annotation*,Signature,InnerClasses,EnclosingMethod
