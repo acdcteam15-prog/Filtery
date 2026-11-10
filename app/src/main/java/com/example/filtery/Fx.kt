@@ -1,6 +1,7 @@
 package com.example.filtery
 
 import android.graphics.Bitmap
+import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorMatrix
@@ -373,5 +374,94 @@ class FxCtx(
         val u = sqrt(q)
         val f = (1f - u) * (1f - u)
         d[0] += dx * sx * f; d[1] += dy * sy * f
+    }
+
+    // ---------------------------------------------------------------- realism helpers (shading, shadows, glow, fur)
+    fun shadeColor(c: Int, f: Float): Int {
+        val r = (Color.red(c) * f).roundToInt().coerceIn(0, 255)
+        val g = (Color.green(c) * f).roundToInt().coerceIn(0, 255)
+        val b = (Color.blue(c) * f).roundToInt().coerceIn(0, 255)
+        return Color.argb(Color.alpha(c), r, g, b)
+    }
+
+    /** The colour of the picture around a point (used to match skin and hair). */
+    fun skinAt(x: Float, y: Float): Int {
+        var r = 0; var g = 0; var b = 0; var n = 0
+        for (dy in -2..2 step 2) for (dx in -2..2 step 2) {
+            val px = (x + dx * s * 0.004f).toInt().coerceIn(0, w - 1)
+            val py = (y + dy * s * 0.004f).toInt().coerceIn(0, h - 1)
+            val p = src.getPixel(px, py)
+            r += Color.red(p); g += Color.green(p); b += Color.blue(p); n++
+        }
+        return Color.rgb(r / n, g / n, b / n)
+    }
+
+    /** A ball-like oval: light from the top left. */
+    fun gradOval(x: Float, y: Float, rx: Float, ry: Float, light: Int, dark: Int, a: Float = 1f) {
+        val p = e.fp
+        p.style = Paint.Style.FILL; p.maskFilter = null; p.xfermode = null; p.colorFilter = null
+        p.color = Color.BLACK; p.alpha = (255 * k * a).roundToInt().coerceIn(0, 255)
+        p.shader = RadialGradient(x - rx * 0.35f, y - ry * 0.4f, max(rx, ry) * 1.3f, light, dark, Shader.TileMode.CLAMP)
+        e.rectF.set(x - rx, y - ry, x + rx, y + ry)
+        c.drawOval(e.rectF, p)
+        p.shader = null
+    }
+
+    fun gradRRect(l: Float, t: Float, r: Float, b: Float, rad: Float, c1: Int, c2: Int, vertical: Boolean = true, a: Float = 1f) {
+        val p = e.fp
+        p.style = Paint.Style.FILL; p.maskFilter = null; p.xfermode = null; p.colorFilter = null
+        p.color = Color.BLACK; p.alpha = (255 * k * a).roundToInt().coerceIn(0, 255)
+        p.shader = if (vertical) LinearGradient(l, t, l, b, c1, c2, Shader.TileMode.CLAMP) else LinearGradient(l, t, r, t, c1, c2, Shader.TileMode.CLAMP)
+        e.rectF.set(l, t, r, b)
+        c.drawRoundRect(e.rectF, rad, rad, p)
+        p.shader = null
+    }
+
+    /** Fills the path in [e.path] with a straight gradient from (x1,y1) to (x2,y2). */
+    fun gradPath(x1: Float, y1: Float, x2: Float, y2: Float, c1: Int, c2: Int, a: Float = 1f) {
+        val p = e.fp
+        p.style = Paint.Style.FILL; p.maskFilter = null; p.xfermode = null; p.colorFilter = null
+        p.color = Color.BLACK; p.alpha = (255 * k * a).roundToInt().coerceIn(0, 255)
+        p.shader = LinearGradient(x1, y1, x2, y2, c1, c2, Shader.TileMode.CLAMP)
+        c.drawPath(e.path, p)
+        p.shader = null
+    }
+
+    /** A blurred oval: soft shadows, blush, paint on skin. */
+    fun softOval(x: Float, y: Float, rx: Float, ry: Float, color: Int, a: Float, blur: Float) {
+        val p = fill(color, a)
+        p.maskFilter = BlurMaskFilter(max(1f, blur), BlurMaskFilter.Blur.NORMAL)
+        e.rectF.set(x - rx, y - ry, x + rx, y + ry)
+        c.drawOval(e.rectF, p)
+        p.maskFilter = null
+    }
+
+    /** Light that adds up with the picture (fire, lasers, halos). */
+    fun lightBall(x: Float, y: Float, r: Float, color: Int, a: Float = 1f) {
+        val p = e.fp
+        p.style = Paint.Style.FILL; p.maskFilter = null; p.colorFilter = null
+        p.color = Color.BLACK; p.alpha = 255
+        val cc = Color.argb((Color.alpha(color) * k * a).roundToInt().coerceIn(0, 255), Color.red(color), Color.green(color), Color.blue(color))
+        p.shader = RadialGradient(x, y, max(1f, r), cc, Color.argb(0, Color.red(color), Color.green(color), Color.blue(color)), Shader.TileMode.CLAMP)
+        p.xfermode = PorterDuffXfermode(PorterDuff.Mode.ADD)
+        c.drawCircle(x, y, r, p)
+        p.xfermode = null; p.shader = null
+    }
+
+    /** Hair or fur: many thin strokes inside an oval, pointing along [dir] degrees (90 = down), with natural variation. */
+    fun fur(cx: Float, cy: Float, rx: Float, ry: Float, count: Int, len: Float, width: Float, base: Int, seed: Int,
+            dir: Float = 90f, spread: Float = 40f, skip: ((Float, Float) -> Boolean)? = null) {
+        for (i in 0 until count) {
+            val ang = (rnd(i, seed) * 6.2831855f)
+            val rr = sqrt(rnd(i, seed + 1))
+            val x = cx + cos(ang) * rx * rr
+            val y = cy + sin(ang) * ry * rr
+            if (skip != null && skip(x, y)) continue
+            val d = Math.toRadians((dir + (rnd(i, seed + 2) - 0.5f) * spread).toDouble())
+            val l = len * (0.6f + 0.7f * rnd(i, seed + 3))
+            val shade = 0.7f + 0.6f * rnd(i, seed + 4)
+            val col = shadeColor(base, shade)
+            c.drawLine(x, y, x + (cos(d) * l).toFloat(), y + (sin(d) * l).toFloat(), stroke(col, width * (0.7f + 0.6f * rnd(i, seed + 5)), 0.92f))
+        }
     }
 }

@@ -78,7 +78,7 @@ internal fun MutableList<Fx>.addWarpFilters() {
         val fs = facesOrDefault
         warp { x, y, d -> val f = fs[0]; stretch(x, y, f.cx, f.cy, wf * 0.95f, hf * 0.7f, -0.25f * k, 0.9f * k, d) }
     }
-    fx("shortfat", "Short & Fat", "🐷") {
+    fx("shortfat", "Short & Wide", "🍩") {
         val fs = facesOrDefault
         warp { x, y, d -> val f = fs[0]; stretch(x, y, f.cx, f.cy, wf * 0.95f, hf * 0.7f, 0.9f * k, -0.25f * k, d) }
     }
@@ -110,5 +110,70 @@ internal fun MutableList<Fx>.addWarpFilters() {
     }
     fx("melt", "Melt", "🍦", false) {
         warp { x, y, d -> d[1] += (0.5f + 0.5f * sin(x / wf * 10f + t * 2f)) * 0.07f * hf * k * (y / hf) }
+    }
+
+    fx("baby", "Baby Face", "👶") {
+        val fs = facesOrDefault
+        warp { x, y, d ->
+            for (f in fs) {
+                val r = f.eyeDist * 0.7f
+                bump(x, y, f.lx, f.ly, r, 0.9f * k, d); bump(x, y, f.rx, f.ry, r, 0.9f * k, d)
+                bump(x, y, f.nx, f.ny, f.w * 0.3f, -0.5f * k, d)
+                bump(x, y, f.mx, f.my, f.w * 0.35f, -0.45f * k, d)
+                bump(x, y, f.hx(0f, -0.3f * f.h), f.hy(0f, -0.3f * f.h), f.w * 0.6f, 0.35f * k, d)
+                bump(x, y, f.hx(0f, 0.42f * f.h), f.hy(0f, 0.42f * f.h), f.w * 0.5f, -0.4f * k, d)
+            }
+        }
+    }
+    fx("bigsmile", "Big Smile", "😁") {
+        val fs = facesOrDefault
+        warp { x, y, d ->
+            for (f in fs) {
+                for (sg in intArrayOf(-1, 1)) {
+                    slide(x, y, f.hx(sg * 0.2f * f.w, 0.28f * f.h), f.hy(sg * 0.2f * f.w, 0.28f * f.h), f.w * 0.3f, sg * 0.08f * f.w * k, -0.1f * f.w * k, d)
+                    bump(x, y, f.hx(sg * 0.34f * f.w, 0.1f * f.h), f.hy(sg * 0.34f * f.w, 0.1f * f.h), f.w * 0.25f, 0.5f * k, d)
+                }
+            }
+        }
+    }
+    fx("surprised", "Surprised", "😲") {
+        val fs = facesOrDefault
+        warp { x, y, d ->
+            for (f in fs) {
+                val r = f.eyeDist * 0.65f
+                bump(x, y, f.lx, f.ly, r, 1.0f * k, d); bump(x, y, f.rx, f.ry, r, 1.0f * k, d)
+                for (sg in intArrayOf(-1, 1)) {
+                    val bx = if (sg < 0) f.lx else f.rx; val by = if (sg < 0) f.ly else f.ry
+                    slide(x, y, bx, by - 0.2f * f.w, f.w * 0.28f, 0f, -0.1f * f.w * k, d)
+                }
+                stretch(x, y, f.mx, f.my + 0.03f * f.w, f.w * 0.24f, f.w * 0.2f, -0.2f * k, 0.9f * k, d)
+            }
+        }
+    }
+    fx("frogeyes", "Frog Eyes", "🐸") {
+        val fs = facesOrDefault
+        warp { x, y, d ->
+            for (f in fs) {
+                val r = f.eyeDist * 0.6f
+                for (i in 0..1) {
+                    val ex = if (i == 0) f.lx else f.rx; val ey = if (i == 0) f.ly else f.ry
+                    slide(x, y, ex, ey, r, 0f, -0.2f * r * k, d)
+                    bump(x, y, ex, ey - 0.2f * r * k, r * 0.9f, 1.4f * k, d)
+                }
+            }
+        }
+    }
+    fx("bigforehead", "Big Forehead", "🥚") {
+        val fs = facesOrDefault
+        warp { x, y, d -> for (f in fs) bump(x, y, f.hx(0f, -0.32f * f.h), f.hy(0f, -0.32f * f.h), f.w * 0.75f, 1.5f * k, d) }
+    }
+    fx("pinocchio", "Long Nose", "👃") {
+        val fs = facesOrDefault
+        warp { x, y, d ->
+            for (f in fs) {
+                bump(x, y, f.nx, f.ny, f.w * 0.3f, 1.2f * k, d)
+                slide(x, y, f.nx, f.ny, f.w * 0.4f, 0f, 0.4f * f.w * 0.4f * k, d)
+            }
+        }
     }
 }

@@ -204,4 +204,84 @@ internal fun MutableList<Fx>.addFxFilters() {
         c.drawBitmap(src, dx, 0f, paintA(0.35f))
         c.drawBitmap(src, -dx, 0f, paintA(0.25f))
     }
+
+    fx("oldage", "Old Age", "🧓", true) {
+        val fs = facesOrDefault
+        pix(768) { dst, sp, ww, wh ->
+            val n = ww * wh
+            val g = e.ints(n, 2); val m = e.ints(n, 3)
+            Px.gray(sp, g, n); Px.sobel(g, ww, wh, m, 7)
+            System.arraycopy(sp, 0, dst, 0, n)
+            val sc = ww.toFloat() / w
+            for (f in fs) {
+                val cx = f.cx * sc; val cy = f.cy * sc; val rx = f.w * 0.62f * sc; val ry = f.h * 0.68f * sc
+                val x0 = (cx - rx).toInt().coerceIn(0, ww - 1); val x1 = (cx + rx).toInt().coerceIn(0, ww - 1)
+                val y0 = (cy - ry).toInt().coerceIn(0, wh - 1); val y1 = (cy + ry).toInt().coerceIn(0, wh - 1)
+                for (y in y0..y1) for (x in x0..x1) {
+                    val dx = (x - cx) / rx; val dy = (y - cy) / ry
+                    val q = dx * dx + dy * dy
+                    if (q >= 1f) continue
+                    val wgt = ((1f - q) * 3f).coerceAtMost(1f)
+                    val i = y * ww + x
+                    val p = sp[i]
+                    val l = Px.lum(p)
+                    val dark = (m[i] * 0.6f).toInt()
+                    val nr = (((p shr 16) and 255) * 0.55f + l * 0.45f).toInt() - dark
+                    val ng = (((p shr 8) and 255) * 0.55f + l * 0.45f).toInt() - dark
+                    val nb = ((p and 255) * 0.55f + l * 0.45f).toInt() - dark
+                    dst[i] = Px.mix(p, Px.rgb(nr, ng, nb), (wgt * 256).toInt())
+                }
+            }
+        }
+        for (f in fs) {
+            val ed = f.eyeDist
+            softOval(f.lx, f.ly + 0.2f * ed, 0.38f * ed, 0.12f * ed, 0xFF5A3A4A.toInt(), 0.4f, 0.1f * ed)
+            softOval(f.rx, f.ry + 0.2f * ed, 0.38f * ed, 0.12f * ed, 0xFF5A3A4A.toInt(), 0.4f, 0.1f * ed)
+            at(f.cx, f.cy, f.rot) {
+                fur(0f, -0.52f * f.h, 0.58f * f.w, 0.16f * f.h, 150, 0.1f * f.w, 0.009f * f.w, 0xFFE9E9EE.toInt(), 7, -80f, 160f)
+                fur(-0.5f * f.w, -0.22f * f.h, 0.08f * f.w, 0.2f * f.h, 50, 0.08f * f.w, 0.009f * f.w, 0xFFDADAE0.toInt(), 8, 100f, 60f)
+                fur(0.5f * f.w, -0.22f * f.h, 0.08f * f.w, 0.2f * f.h, 50, 0.08f * f.w, 0.009f * f.w, 0xFFDADAE0.toInt(), 9, 80f, 60f)
+            }
+        }
+    }
+    fx("zombie", "Zombie", "🧟", true) {
+        val fs = facesOrDefault
+        pix(768) { dst, sp, ww, wh ->
+            val n = ww * wh
+            val g = e.ints(n, 2); val m = e.ints(n, 3)
+            Px.gray(sp, g, n); Px.sobel(g, ww, wh, m, 6)
+            System.arraycopy(sp, 0, dst, 0, n)
+            val sc = ww.toFloat() / w
+            for (f in fs) {
+                val cx = f.cx * sc; val cy = f.cy * sc; val rx = f.w * 0.62f * sc; val ry = f.h * 0.68f * sc
+                val x0 = (cx - rx).toInt().coerceIn(0, ww - 1); val x1 = (cx + rx).toInt().coerceIn(0, ww - 1)
+                val y0 = (cy - ry).toInt().coerceIn(0, wh - 1); val y1 = (cy + ry).toInt().coerceIn(0, wh - 1)
+                for (y in y0..y1) for (x in x0..x1) {
+                    val dx = (x - cx) / rx; val dy = (y - cy) / ry
+                    val q = dx * dx + dy * dy
+                    if (q >= 1f) continue
+                    val wgt = ((1f - q) * 3f).coerceAtMost(1f)
+                    val i = y * ww + x
+                    val p = sp[i]
+                    val l = Px.lum(p)
+                    val dark = (m[i] * 0.5f).toInt()
+                    val nr = (l * 0.78f).toInt() + 6 - dark
+                    val ng = (l * 0.95f).toInt() + 14 - dark
+                    val nb = (l * 0.68f).toInt() - dark
+                    dst[i] = Px.mix(p, Px.rgb(nr, ng, nb), (wgt * 256).toInt())
+                }
+            }
+        }
+        for (f in fs) {
+            val ed = f.eyeDist
+            for (i in 0..1) {
+                val ex = if (i == 0) f.lx else f.rx; val ey = if (i == 0) f.ly else f.ry
+                softOval(ex, ey, 0.4f * ed, 0.3f * ed, 0xFF0F1A0F.toInt(), 0.7f, 0.1f * ed)
+                gradOval(ex, ey, 0.22f * ed, 0.15f * ed, 0xFFF1F2C0.toInt(), 0xFF8A8F50.toInt())
+                disc(ex, ey, 0.05f * ed, 0xFF111111.toInt())
+            }
+            softOval(f.mx, f.my, 0.22f * f.w, 0.05f * f.w, 0xFF2A0A0A.toInt(), 0.5f, 0.03f * f.w)
+            softOval(f.mx + 0.12f * f.w, f.my + 0.08f * f.w, 0.03f * f.w, 0.12f * f.w, 0xFF8A0A14.toInt(), 0.6f, 0.02f * f.w)
+        }
+    }
 }
