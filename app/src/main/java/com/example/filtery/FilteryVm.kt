@@ -21,6 +21,7 @@ import java.io.File
 
 /** Everything the screens show and every button does lives here. */
 class FilteryVm(private val app: Application) : AndroidViewModel(app) {
+    private val stickersReady = Stickers.init(app)      // must come first: the filter list includes your PNG props
     val prefs = Prefs(app)
     private val main = Handler(Looper.getMainLooper())
 
@@ -151,6 +152,7 @@ class FilteryVm(private val app: Application) : AndroidViewModel(app) {
     fun pick(f: Fx) {
         fx = f
         pipeline.fx = f
+        intensity = 1f; pipeline.intensity = 1f; prefs.lastIntensity = 1f
         prefs.lastFilter = f.id
         if (f !== Filters.original) {
             val r = recents.toMutableList()

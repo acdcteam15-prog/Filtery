@@ -9,6 +9,7 @@ camera (CameraX) -> face finder (ML Kit, model inside the app) -> filter engine 
 
 ## What it does
 - **Live filters** in the camera preview; the same filter is applied again at full size when you take the photo.
+- **Nearly full-screen picture** (9:16 like your screen); photos and videos are saved in the same shape you see.
 - **Front and back camera** (flip button). Pinch the preview to zoom.
 - **Photo and video clips** (up to 60 seconds, with sound). The filter is recorded into the video.
 - **Strength slider** for every filter (one filter at a time).
@@ -34,6 +35,12 @@ camera (CameraX) -> face finder (ML Kit, model inside the app) -> filter engine 
 **Frames and overlays (13)**: Polaroid, Film Strip, Soft Frame, Neon Frame, Heart Frame, Date Stamp, Cinema Bars, LOL Banner, Snowfall, Confetti, Sparkles, Hearts Rising, Bubbles
 
 Face filters need a face in view; the preview says "Show your face" until one is found. Warps use an imaginary face in the middle when none is found.
+
+## Real-photo props (for a realistic look)
+Props drawn by code can never look like a real photo. For real ones, put transparent PNG pictures of real hats, beards, glasses... in
+`app/src/main/assets/stickers/` and rebuild: each file becomes a face filter automatically and is placed on the face by its name
+(`hat_wizard.png`, `beard_white.png`, `glasses_aviator.png`, `mustache_x.png`, `ears_x.png`, `crown_x.png`, `mask_x.png`, `nose_x.png`, `mouth_x.png`, `face_x.png`).
+See the README.txt in that folder.
 
 ## Build it (same as Obdy)
 1. Unzip so that `settings.gradle.kts` and the `app` folder sit next to `Rebuild-APK.bat`.

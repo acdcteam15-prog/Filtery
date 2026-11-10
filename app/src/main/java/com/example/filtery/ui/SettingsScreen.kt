@@ -32,6 +32,9 @@ fun SettingsScreen(vm: FilteryVm) {
         }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
             Section("CAMERA") {
+                SettingSwitch("Grid lines", "Thirds grid on the live picture.", vm.grid) { vm.toggleGrid() }
+                Text("Caption (text on the bottom of photos and videos)", color = Brand.Text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                androidx.compose.material3.OutlinedTextField(value = vm.caption, onValueChange = { vm.applyCaption(it) }, singleLine = true, modifier = Modifier.fillMaxWidth(), placeholder = { Text("e.g. Best day ever!") })
                 SettingSwitch("Mirror selfies", "Front-camera photos look like the preview (like a mirror).", vm.mirror) { vm.applyMirror(it) }
                 Text("Photo quality", color = Brand.Text, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                 Seg(listOf("Standard (~3 MP)", "High (up to 12 MP)"), if (vm.photoHigh) 1 else 0) { vm.applyPhotoHigh(it == 1) }

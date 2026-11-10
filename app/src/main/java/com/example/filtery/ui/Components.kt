@@ -37,7 +37,7 @@ import java.io.File
 @Composable
 fun RoundBtn(onClick: () -> Unit, modifier: Modifier = Modifier, size: Dp = 40.dp, content: @Composable () -> Unit) {
     Box(
-        modifier.size(size).clip(CircleShape).background(Brand.Card).border(1.dp, Brand.Border, CircleShape).clickable { onClick() },
+        modifier.size(size).clip(CircleShape).background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.38f)).border(1.dp, androidx.compose.ui.graphics.Color.White.copy(alpha = 0.22f), CircleShape).clickable { onClick() },
         contentAlignment = Alignment.Center,
     ) { content() }
 }

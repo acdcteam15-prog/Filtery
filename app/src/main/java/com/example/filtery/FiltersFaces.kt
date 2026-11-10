@@ -78,14 +78,14 @@ internal fun FxCtx.beard(f: PFace, base: Int, lengthF: Float, count: Int, seed: 
         val hole2 = Path(); hole2.addOval(-0.21f * u, 0.205f * h, 0.21f * u, 0.355f * h, Path.Direction.CW)
         jaw.op(hole1, Path.Op.DIFFERENCE); jaw.op(hole2, Path.Op.DIFFERENCE)
         e.path.set(jaw)
-        gradPath(0f, 0f, 0f, 0.7f * h, shadeColor(base, 0.8f), shadeColor(base, 0.45f), 0.92f)
+        gradPath(0f, 0f, 0f, 0.7f * h, shadeColor(base, 0.7f), shadeColor(base, 0.38f), 1f)
         val skip = { x: Float, y: Float ->
             val a = x / (0.3f * u); val b = (y - 0.08f * h) / (0.25f * h)
             val m = x / (0.21f * u); val n = (y - 0.28f * h) / (0.075f * h)
             (a * a + b * b < 1f) || (m * m + n * n < 1f)
         }
-        fur(0f, 0.3f * h, 0.58f * u, 0.38f * h, count, 0.16f * u * lengthF, 0.012f * u, base, seed, 90f, 50f, skip)
-        fur(0f, 0.42f * h, 0.5f * u, 0.3f * h, count / 2, 0.2f * u * lengthF, 0.011f * u, shadeColor(base, 1.18f), seed + 40, 90f, 36f, skip)
+        fur(0f, 0.3f * h, 0.58f * u, 0.38f * h, count * 3, 0.13f * u * lengthF, 0.0055f * u, base, seed, 90f, 50f, skip)
+        fur(0f, 0.42f * h, 0.5f * u, 0.3f * h, count * 2, 0.17f * u * lengthF, 0.005f * u, shadeColor(base, 1.18f), seed + 40, 90f, 36f, skip)
     }
 }
 
@@ -103,9 +103,9 @@ internal fun FxCtx.mustacheFur(f: PFace, base: Int, size: Float, seed: Int) {
         pa.cubicTo(-0.3f * u * s, -0.08f * u * s, -0.1f * u * s, -0.11f * u * s, 0f, -0.03f * u * s)
         pa.close()
         gradPath(0f, -0.1f * u * s, 0f, 0.08f * u * s, shadeColor(base, 1.1f), shadeColor(base, 0.55f))
-        fur(0.17f * u * s, 0.0f, 0.2f * u * s, 0.045f * u * s, 60, 0.1f * u * s, 0.008f * u, base, seed, 15f, 40f)
-        fur(-0.17f * u * s, 0.0f, 0.2f * u * s, 0.045f * u * s, 60, 0.1f * u * s, 0.008f * u, base, seed + 9, 165f, 40f)
-        fur(0f, 0f, 0.3f * u * s, 0.05f * u * s, 40, 0.07f * u * s, 0.007f * u, shadeColor(base, 1.3f), seed + 20, 90f, 90f)
+        fur(0.17f * u * s, 0.0f, 0.2f * u * s, 0.045f * u * s, 180, 0.1f * u * s, 0.0045f * u, base, seed, 15f, 40f)
+        fur(-0.17f * u * s, 0.0f, 0.2f * u * s, 0.045f * u * s, 180, 0.1f * u * s, 0.0045f * u, base, seed + 9, 165f, 40f)
+        fur(0f, 0f, 0.3f * u * s, 0.05f * u * s, 120, 0.07f * u * s, 0.004f * u, shadeColor(base, 1.3f), seed + 20, 90f, 90f)
     }
 }
 

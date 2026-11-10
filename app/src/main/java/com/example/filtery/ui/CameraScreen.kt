@@ -76,49 +76,31 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun CameraScreen(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -> Unit) {
-    var captionDialog by remember { mutableStateOf(false) }
     LaunchedEffect(vm.camGranted) { if (vm.camGranted) vm.ensureCamera(owner) }
 
-    BoxWithConstraints(Modifier.fillMaxSize().background(Brand.Bg)) {
-        val room = maxHeight - 52.dp - 268.dp
-        val wide = maxWidth - 20.dp
-        val fit = (room * 0.75f).coerceAtLeast(150.dp)
-        val pw = if (fit < wide) fit else wide
-        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            TopBar(vm, onCaption = { captionDialog = true })
-            PreviewBox(vm, owner, askPermission, Modifier.width(pw).aspectRatio(0.75f))
-            Controls(vm, owner)
-        }
+    // The picture fills the screen width (9:16, like a phone screen); the buttons sit on top of it.
+    Box(Modifier.fillMaxSize().background(Color.Black)) {
+        PreviewBox(vm, owner, askPermission, Modifier.fillMaxWidth().aspectRatio(0.5625f).align(Alignment.TopCenter))
+        TopBar(vm, Modifier.align(Alignment.TopCenter))
+        Controls(vm, owner, Modifier.align(Alignment.BottomCenter))
     }
-    if (captionDialog) CaptionDialog(vm) { captionDialog = false }
 }
 
 // ---------------------------------------------------------------------------------------------- top bar
 @Composable
-private fun TopBar(vm: FilteryVm, onCaption: () -> Unit) {
-    Row(Modifier.fillMaxWidth().height(52.dp).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+private fun TopBar(vm: FilteryVm, modifier: Modifier) {
+    Row(modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         RoundBtn(onClick = { vm.cycleFlash() }) {
-            AppIcon(when (vm.flash) { 1 -> Ic.BoltAuto; 2 -> Ic.Bolt; else -> Ic.BoltOff }, size = 20.dp, color = if (vm.flash == 0) Brand.Dim else Brand.Orange)
+            AppIcon(when (vm.flash) { 1 -> Ic.BoltAuto; 2 -> Ic.Bolt; else -> Ic.BoltOff }, size = 20.dp, color = if (vm.flash == 0) Color.White else Brand.Orange)
         }
-        Box(
-            Modifier.height(40.dp).clip(RoundedCornerShape(20.dp)).background(Brand.Card).border(1.dp, Brand.Border, RoundedCornerShape(20.dp)).clickable { vm.cycleTimer() }.padding(horizontal = 12.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                AppIcon(Ic.Timer, size = 18.dp, color = if (vm.timer == 0) Brand.Dim else Brand.Cyan)
-                if (vm.timer > 0) Text("${vm.timer}s", color = Brand.Cyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-            }
+        RoundBtn(onClick = { vm.cycleTimer() }) {
+            if (vm.timer == 0) AppIcon(Ic.Timer, size = 20.dp) else Text("${vm.timer}s", color = Brand.Cyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
         }
-        RoundBtn(onClick = { vm.toggleGrid() }) { AppIcon(Ic.Grid, size = 19.dp, color = if (vm.grid) Brand.Cyan else Brand.Dim) }
-        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            Text("Filtery", color = Brand.Text, fontWeight = FontWeight.ExtraBold, fontSize = 19.sp)
-        }
-        RoundBtn(onClick = onCaption) {
-            Text("Aa", color = if (vm.caption.isBlank()) Brand.Dim else Brand.Pink, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-        }
+        RoundBtn(onClick = { vm.shuffle() }) { AppIcon(Ic.Dice, size = 22.dp, color = Brand.Cyan) }
+        Box(Modifier.weight(1f))
         Box {
             RoundBtn(onClick = { vm.go("settings") }) { AppIcon(Ic.Gear, size = 21.dp) }
-            if (vm.updateReady || vm.update != null) Box(Modifier.align(Alignment.TopEnd).size(11.dp).clip(CircleShape).background(Brand.Red).border(2.dp, Brand.Bg, CircleShape))
+            if (vm.updateReady || vm.update != null) Box(Modifier.align(Alignment.TopEnd).size(11.dp).clip(CircleShape).background(Brand.Red).border(2.dp, Color.Black, CircleShape))
         }
     }
 }
@@ -128,7 +110,7 @@ private fun TopBar(vm: FilteryVm, onCaption: () -> Unit) {
 private fun PreviewBox(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -> Unit, modifier: Modifier) {
     val paint = remember { Paint(Paint.FILTER_BITMAP_FLAG) }
     Box(
-        modifier.clip(RoundedCornerShape(24.dp)).background(Color.Black).border(1.5.dp, Brand.Border, RoundedCornerShape(24.dp))
+        modifier.background(Color.Black)
             .pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> if (zoom != 1f) vm.applyZoom(vm.zoom * zoom) } },
     ) {
         Canvas(Modifier.fillMaxSize()) {
@@ -163,12 +145,12 @@ private fun PreviewBox(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -
 
         // which filter is on
         if (vm.fx !== Filters.original) {
-            Box(Modifier.align(Alignment.TopStart).padding(10.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.45f)).padding(horizontal = 10.dp, vertical = 5.dp)) {
+            Box(Modifier.align(Alignment.TopCenter).padding(top = 64.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.45f)).padding(horizontal = 10.dp, vertical = 5.dp)) {
                 Text("${vm.fx.icon} ${vm.fx.name}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
         if (vm.zoom > 1.05f) {
-            Box(Modifier.align(Alignment.TopEnd).padding(10.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.45f)).padding(horizontal = 10.dp, vertical = 5.dp)) {
+            Box(Modifier.align(Alignment.CenterEnd).padding(10.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.45f)).padding(horizontal = 10.dp, vertical = 5.dp)) {
                 Text("×" + String.format("%.1f", vm.zoom), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
@@ -178,31 +160,13 @@ private fun PreviewBox(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -
             }
         }
         if (vm.recording) {
-            Row(Modifier.align(Alignment.TopCenter).padding(10.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.5f)).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(Modifier.align(Alignment.TopCenter).padding(top = 64.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.5f)).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Box(Modifier.size(9.dp).clip(CircleShape).background(Brand.Red))
                 Text(String.format("%d:%02d", vm.recordSeconds / 60, vm.recordSeconds % 60), color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
             }
         }
         if (vm.busy) {
-            Box(Modifier.align(Alignment.TopEnd).padding(top = 44.dp, end = 12.dp)) { CircularProgressIndicator(color = Brand.Pink, strokeWidth = 3.dp, modifier = Modifier.size(24.dp)) }
-        }
-
-        // photo / video switch
-        Row(
-            Modifier.align(Alignment.BottomCenter).padding(10.dp).clip(RoundedCornerShape(18.dp)).background(Color.Black.copy(alpha = 0.45f)).padding(3.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            for (video in listOf(false, true)) {
-                val on = vm.videoMode == video
-                Row(
-                    Modifier.clip(RoundedCornerShape(15.dp)).background(if (on) Brand.Main else androidx.compose.ui.graphics.SolidColor(Color.Transparent))
-                        .clickable { if (!vm.recording) vm.videoMode = video }.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp),
-                ) {
-                    AppIcon(if (video) Ic.Video else Ic.Photo, size = 15.dp, color = if (on) Color.White else Color(0xCCFFFFFF))
-                    Text(if (video) "VIDEO" else "PHOTO", color = if (on) Color.White else Color(0xCCFFFFFF), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                }
-            }
+            Box(Modifier.align(Alignment.TopStart).padding(top = 70.dp, start = 16.dp)) { CircularProgressIndicator(color = Brand.Pink, strokeWidth = 3.dp, modifier = Modifier.size(24.dp)) }
         }
 
         // timer number
@@ -215,48 +179,52 @@ private fun PreviewBox(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -
 
 // ---------------------------------------------------------------------------------------------- filters + shutter
 @Composable
-private fun Controls(vm: FilteryVm, owner: LifecycleOwner) {
-    Column(Modifier.fillMaxWidth().height(268.dp).padding(top = 4.dp), verticalArrangement = Arrangement.SpaceEvenly) {
-        // strength
-        Row(Modifier.fillMaxWidth().height(36.dp).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (vm.fx === Filters.original) {
-                Text("Pick a filter — long-press one to make it a ★ favorite", color = Brand.Dim, fontSize = 12.sp)
-            } else {
-                Text("Strength", color = Brand.Dim, fontSize = 12.sp, modifier = Modifier.width(58.dp))
+private fun Controls(vm: FilteryVm, owner: LifecycleOwner, modifier: Modifier) {
+    val scrim = androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color.Transparent, Color(0xB3000000), Color(0xE6000000)))
+    Column(modifier.fillMaxWidth().background(scrim).padding(top = 18.dp, bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // photo / video
+        Row(Modifier.align(Alignment.CenterHorizontally).clip(RoundedCornerShape(16.dp)).background(Color.Black.copy(alpha = 0.4f)).padding(2.dp)) {
+            for (video in listOf(false, true)) {
+                val on = vm.videoMode == video
+                Box(
+                    Modifier.clip(RoundedCornerShape(14.dp)).background(if (on) Brand.Main else androidx.compose.ui.graphics.SolidColor(Color.Transparent))
+                        .clickable { if (!vm.recording) vm.videoMode = video }.padding(horizontal = 14.dp, vertical = 5.dp),
+                    contentAlignment = Alignment.Center,
+                ) { Text(if (video) "VIDEO" else "PHOTO", color = if (on) Color.White else Color(0xCCFFFFFF), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+            }
+        }
+        // strength: only for filters where it means something (props are always solid)
+        if (vm.fx !== Filters.original && vm.fx.cat != Cat.FACES) {
+            Row(Modifier.fillMaxWidth().height(30.dp).padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically) {
                 Slider(
                     value = vm.intensity, onValueChange = { vm.applyIntensity(it) }, onValueChangeFinished = { vm.commitIntensity() }, valueRange = 0.1f..1f,
                     modifier = Modifier.weight(1f),
-                    colors = SliderDefaults.colors(thumbColor = Brand.Pink, activeTrackColor = Brand.Pink, inactiveTrackColor = Brand.Card2),
+                    colors = SliderDefaults.colors(thumbColor = Brand.Pink, activeTrackColor = Brand.Pink, inactiveTrackColor = Color(0x55FFFFFF)),
                 )
-                Text("${(vm.intensity * 100).toInt()}%", color = Brand.Text, fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.width(42.dp), textAlign = TextAlign.End)
+                Text("${(vm.intensity * 100).toInt()}%", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.width(44.dp), textAlign = TextAlign.End)
             }
         }
         // categories
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TabPill("★ Favorites", vm.tab == "fav") { vm.tab = "fav" }
-            TabPill("🕒 Recent", vm.tab == "recent") { vm.tab = "recent" }
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            TabPill("★", vm.tab == "fav") { vm.tab = "fav" }
+            TabPill("🕒", vm.tab == "recent") { vm.tab = "recent" }
             for (c in Cat.values()) TabPill("${c.icon} ${c.title}", vm.tab == "cat:${c.name}") { vm.tab = "cat:${c.name}" }
         }
         // filters
         val list = vm.visibleFilters()
         if (list.isEmpty()) {
-            Box(Modifier.fillMaxWidth().height(72.dp), contentAlignment = Alignment.Center) {
-                Text(if (vm.tab == "fav") "No favorites yet. Long-press any filter to add it." else "Nothing here yet.", color = Brand.Dim, fontSize = 13.sp)
+            Box(Modifier.fillMaxWidth().height(66.dp), contentAlignment = Alignment.Center) {
+                Text(if (vm.tab == "fav") "No favorites yet. Long-press a filter to add it." else "Nothing here yet.", color = Color(0xCCFFFFFF), fontSize = 13.sp)
             }
         } else {
-            Row(Modifier.fillMaxWidth().height(74.dp).horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().height(70.dp).horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 for (f in list) FilterChip(vm, f)
             }
         }
         // buttons
-        Row(Modifier.fillMaxWidth().height(86.dp).padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(Modifier.fillMaxWidth().height(84.dp).padding(horizontal = 28.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
             GalleryThumb(vm)
-            RoundBtn(onClick = { vm.shuffle() }, size = 46.dp) { AppIcon(Ic.Dice, size = 24.dp, color = Brand.Cyan) }
             Shutter(vm)
-            RoundBtn(onClick = { vm.toggleFavorite(vm.fx) }, size = 46.dp) {
-                val fav = vm.isFavorite(vm.fx)
-                AppIcon(if (fav) Ic.StarFill else Ic.Star, size = 23.dp, color = if (fav) Brand.Orange else Brand.Dim)
-            }
             RoundBtn(onClick = { vm.flip(owner) }, size = 52.dp) { AppIcon(Ic.Flip, size = 26.dp) }
         }
     }
@@ -265,10 +233,10 @@ private fun Controls(vm: FilteryVm, owner: LifecycleOwner) {
 @Composable
 private fun TabPill(label: String, on: Boolean, onClick: () -> Unit) {
     Box(
-        Modifier.height(32.dp).clip(RoundedCornerShape(16.dp)).background(if (on) Brand.Card2 else Brand.Card)
-            .border(1.dp, if (on) Brand.Pink else Brand.Border, RoundedCornerShape(16.dp)).clickable { onClick() }.padding(horizontal = 12.dp),
+        Modifier.height(28.dp).clip(RoundedCornerShape(14.dp)).background(if (on) Color.White.copy(alpha = 0.22f) else Color.Black.copy(alpha = 0.3f))
+            .border(1.dp, if (on) Brand.Pink else Color.White.copy(alpha = 0.15f), RoundedCornerShape(14.dp)).clickable { onClick() }.padding(horizontal = 11.dp),
         contentAlignment = Alignment.Center,
-    ) { Text(label, color = if (on) Brand.Text else Brand.Dim, fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1) }
+    ) { Text(label, color = if (on) Color.White else Color(0xCCFFFFFF), fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1) }
 }
 
 @Composable
@@ -277,14 +245,14 @@ private fun FilterChip(vm: FilteryVm, f: Fx) {
     val sc by animateFloatAsState(if (sel) 1.08f else 1f, tween(160), label = "chip")
     val shape = RoundedCornerShape(18.dp)
     Box(
-        Modifier.width(70.dp).height(66.dp).graphicsLayer { scaleX = sc; scaleY = sc }.clip(shape).background(if (sel) Brand.Card2 else Brand.Card)
-            .border(if (sel) 2.dp else 1.dp, if (sel) Brand.Main else androidx.compose.ui.graphics.SolidColor(Brand.Border), shape)
+        Modifier.width(70.dp).height(66.dp).graphicsLayer { scaleX = sc; scaleY = sc }.clip(shape).background(if (sel) Color.White.copy(alpha = 0.22f) else Color.Black.copy(alpha = 0.4f))
+            .border(if (sel) 2.dp else 1.dp, if (sel) Brand.Main else androidx.compose.ui.graphics.SolidColor(Color.White.copy(alpha = 0.18f)), shape)
             .pointerInput(f.id) { detectTapGestures(onTap = { vm.pick(f) }, onLongPress = { vm.toggleFavorite(f) }) },
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(f.icon, fontSize = 24.sp)
-            Text(f.name, color = if (sel) Brand.Text else Brand.Dim, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 3.dp))
+            Text(f.name, color = if (sel) Color.White else Color(0xCCFFFFFF), fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 3.dp))
         }
         if (vm.isFavorite(f)) Text("★", color = Brand.Orange, fontSize = 11.sp, modifier = Modifier.align(Alignment.TopEnd).padding(top = 3.dp, end = 5.dp))
     }
@@ -297,7 +265,7 @@ private fun GalleryThumb(vm: FilteryVm) {
         value = if (shot == null) null else withContext(Dispatchers.IO) { Thumbs.load(shot, 160) }
     }
     Box(
-        Modifier.size(52.dp).clip(RoundedCornerShape(15.dp)).background(Brand.Card).border(1.5.dp, Brand.Border, RoundedCornerShape(15.dp)).clickable { vm.go("gallery") },
+        Modifier.size(52.dp).clip(RoundedCornerShape(15.dp)).background(Color.Black.copy(alpha = 0.4f)).border(1.5.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(15.dp)).clickable { vm.go("gallery") },
         contentAlignment = Alignment.Center,
     ) {
         val b = bmp
@@ -335,7 +303,7 @@ private fun Shutter(vm: FilteryVm) {
 }
 
 @Composable
-private fun CaptionDialog(vm: FilteryVm, onClose: () -> Unit) {
+internal fun CaptionDialog(vm: FilteryVm, onClose: () -> Unit) {
     var text by remember { mutableStateOf(vm.caption) }
     AlertDialog(
         onDismissRequest = onClose,

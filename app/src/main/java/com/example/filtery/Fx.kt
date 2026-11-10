@@ -91,7 +91,8 @@ class FxEngine {
         val W = out.width.toFloat(); val H = out.height.toFloat()
         val pf = ArrayList<PFace>(faces.size)
         for (f in faces) pf.add(PFace(f, W, H))
-        val ctx = FxCtx(this, src, out, c, pf, k.coerceIn(0f, 1f), t)
+        val kk = if (fx.cat == Cat.FACES) 1f else k.coerceIn(0f, 1f)   // props are always solid; strength is for warps, colours and effects
+        val ctx = FxCtx(this, src, out, c, pf, kk, t)
         fx.draw(ctx)
         if (!caption.isNullOrBlank()) drawCaption(c, out.width, out.height, caption)
     }
@@ -448,9 +449,10 @@ class FxCtx(
         p.xfermode = null; p.shader = null
     }
 
-    /** Hair or fur: many thin strokes inside an oval, pointing along [dir] degrees (90 = down), with natural variation. */
+    /** Hair or fur: many thin curved strokes inside an oval, pointing along [dir] degrees (90 = down), with natural variation. */
     fun fur(cx: Float, cy: Float, rx: Float, ry: Float, count: Int, len: Float, width: Float, base: Int, seed: Int,
             dir: Float = 90f, spread: Float = 40f, skip: ((Float, Float) -> Boolean)? = null) {
+        val pa = e.path
         for (i in 0 until count) {
             val ang = (rnd(i, seed) * 6.2831855f)
             val rr = sqrt(rnd(i, seed + 1))
@@ -459,9 +461,13 @@ class FxCtx(
             if (skip != null && skip(x, y)) continue
             val d = Math.toRadians((dir + (rnd(i, seed + 2) - 0.5f) * spread).toDouble())
             val l = len * (0.6f + 0.7f * rnd(i, seed + 3))
-            val shade = 0.7f + 0.6f * rnd(i, seed + 4)
+            val shade = 0.62f + 0.7f * rnd(i, seed + 4)
             val col = shadeColor(base, shade)
-            c.drawLine(x, y, x + (cos(d) * l).toFloat(), y + (sin(d) * l).toFloat(), stroke(col, width * (0.7f + 0.6f * rnd(i, seed + 5)), 0.92f))
+            val ex = x + (cos(d) * l).toFloat(); val ey = y + (sin(d) * l).toFloat()
+            val curv = (rnd(i, seed + 6) - 0.5f) * l * 0.7f
+            pa.reset(); pa.moveTo(x, y)
+            pa.quadTo((x + ex) / 2f - sin(d).toFloat() * curv, (y + ey) / 2f + cos(d).toFloat() * curv, ex, ey)
+            c.drawPath(pa, stroke(col, width * (0.6f + 0.6f * rnd(i, seed + 5)), 0.9f))
         }
     }
 

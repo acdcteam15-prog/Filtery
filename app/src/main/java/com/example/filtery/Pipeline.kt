@@ -32,6 +32,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -135,6 +136,16 @@ object Photo {
                     if (r !== up) up.recycle()
                     up = r
                 }
+                // same shape as the live picture (like a phone screen), so the photo matches what you saw
+                val aim = Pipeline.SIZES[1].width.toFloat() / Pipeline.SIZES[1].height
+                val have = up.width.toFloat() / up.height
+                if (abs(have - aim) > 0.01f) {
+                    val nw = if (have > aim) (up.height * aim).roundToInt() else up.width
+                    val nh = if (have > aim) up.height else (up.width / aim).roundToInt()
+                    val cr = Bitmap.createBitmap(up, (up.width - nw) / 2, (up.height - nh) / 2, nw, nh)
+                    if (cr !== up) up.recycle()
+                    up = cr
+                }
                 val faces = if (fx.face) FaceFinder.detectBlocking(up) else emptyList()
                 val out = Bitmap.createBitmap(up.width, up.height, Bitmap.Config.ARGB_8888)
                 val t = (System.currentTimeMillis() % 60000L) / 1000f
@@ -163,8 +174,8 @@ class Pipeline(
     private val onError: (String) -> Unit,
 ) {
     companion object {
-        /** Live picture sizes (3:4, multiples of 16): fast, balanced, sharp. */
-        val SIZES = arrayOf(Size(480, 640), Size(576, 768), Size(720, 960))
+        /** Live picture sizes (about 9:16 like a phone screen): fast, balanced, sharp. */
+        val SIZES = arrayOf(Size(432, 768), Size(544, 960), Size(720, 1280))
     }
 
     private val main = Handler(Looper.getMainLooper())
@@ -316,10 +327,10 @@ class Pipeline(
         lastDetect = now
         try {
             val det = detector ?: FaceDetection.getClient(FaceFinder.options(false, true)).also { detector = it }
-            val small = Bitmap.createBitmap(288, 384, Bitmap.Config.ARGB_8888)
-            Canvas(small).drawBitmap(fr, null, android.graphics.Rect(0, 0, 288, 384), paint)
+            val small = Bitmap.createBitmap(216, 384, Bitmap.Config.ARGB_8888)
+            Canvas(small).drawBitmap(fr, null, android.graphics.Rect(0, 0, 216, 384), paint)
             det.process(InputImage.fromBitmap(small, 0))
-                .addOnSuccessListener { list -> gotFaces(list, 288f, 384f) }
+                .addOnSuccessListener { list -> gotFaces(list, 216f, 384f) }
                 .addOnCompleteListener { detecting.set(false); small.recycle() }
         } catch (e: Exception) {
             detecting.set(false)
