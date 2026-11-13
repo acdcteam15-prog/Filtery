@@ -98,10 +98,7 @@ private fun TopBar(vm: FilteryVm, modifier: Modifier) {
         }
         RoundBtn(onClick = { vm.shuffle() }) { AppIcon(Ic.Dice, size = 22.dp, color = Brand.Cyan) }
         Box(Modifier.weight(1f))
-        Box {
-            RoundBtn(onClick = { vm.go("settings") }) { AppIcon(Ic.Gear, size = 21.dp) }
-            if (vm.updateReady || vm.update != null) Box(Modifier.align(Alignment.TopEnd).size(11.dp).clip(CircleShape).background(Brand.Red).border(2.dp, Color.Black, CircleShape))
-        }
+        RoundBtn(onClick = { vm.go("settings") }) { AppIcon(Ic.Gear, size = 21.dp) }
     }
 }
 
@@ -160,7 +157,7 @@ private fun PreviewBox(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -
             }
         }
         if (vm.recording) {
-            Row(Modifier.align(Alignment.TopCenter).padding(top = 64.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.5f)).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(Modifier.align(Alignment.TopCenter).padding(top = 110.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.5f)).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Box(Modifier.size(9.dp).clip(CircleShape).background(Brand.Red))
                 Text(String.format("%d:%02d", vm.recordSeconds / 60, vm.recordSeconds % 60), color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
             }
@@ -181,7 +178,7 @@ private fun PreviewBox(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -
 @Composable
 private fun Controls(vm: FilteryVm, owner: LifecycleOwner, modifier: Modifier) {
     val scrim = androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color.Transparent, Color(0xB3000000), Color(0xE6000000)))
-    Column(modifier.fillMaxWidth().background(scrim).padding(top = 14.dp, bottom = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(modifier.fillMaxWidth().background(scrim).padding(top = 10.dp, bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         // photo / video
         Row(Modifier.align(Alignment.CenterHorizontally).clip(RoundedCornerShape(12.dp)).background(Color.Black.copy(alpha = 0.35f)).padding(2.dp)) {
             for (video in listOf(false, true)) {
@@ -217,7 +214,7 @@ private fun Controls(vm: FilteryVm, owner: LifecycleOwner, modifier: Modifier) {
                 Text(if (vm.tab == "fav") "No favorites yet. Long-press a filter to add it." else "Nothing here yet.", color = Color(0xCCFFFFFF), fontSize = 13.sp)
             }
         } else {
-            Row(Modifier.fillMaxWidth().height(64.dp).horizontalScroll(rememberScrollState()).padding(horizontal = 10.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().height(60.dp).horizontalScroll(rememberScrollState()).padding(horizontal = 10.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 for (f in list) FilterChip(vm, f)
             }
         }
