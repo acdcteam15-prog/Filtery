@@ -287,4 +287,8 @@ internal fun MutableList<Fx>.addWarpFilters() {
             }
         }
     }
+    fx("bigchin", "Big Chin", "🗿") {
+        val fs = facesOrDefault
+        warp { x, y, d -> for (f in fs) bump(x, y, f.hx(0f, 0.45f * f.h), f.hy(0f, 0.45f * f.h), f.w * 0.8f, 1.6f * k, d) }
+    }
 }
