@@ -140,17 +140,8 @@ private fun PreviewBox(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -
             Text("Starting the camera…", color = Brand.Dim, modifier = Modifier.align(Alignment.Center), fontSize = 14.sp)
         }
 
-        // which filter is on
-        if (vm.fx !== Filters.original) {
-            Box(Modifier.align(Alignment.TopCenter).padding(top = 64.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.45f)).padding(horizontal = 10.dp, vertical = 5.dp)) {
-                Text("${vm.fx.icon} ${vm.fx.name}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            }
-        }
-        if (vm.zoom > 1.05f) {
-            Box(Modifier.align(Alignment.CenterEnd).padding(10.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.45f)).padding(horizontal = 10.dp, vertical = 5.dp)) {
-                Text("×" + String.format("%.1f", vm.zoom), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            }
-        }
+
+
         if (vm.fx.face && vm.hasCamera && !vm.faceSeen) {
             Box(Modifier.align(Alignment.Center).clip(RoundedCornerShape(18.dp)).background(Color.Black.copy(alpha = 0.5f)).padding(horizontal = 14.dp, vertical = 8.dp)) {
                 Text("Show your face 🙂", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
