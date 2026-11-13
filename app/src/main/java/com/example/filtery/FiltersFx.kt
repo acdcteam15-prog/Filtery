@@ -311,4 +311,21 @@ internal fun MutableList<Fx>.addFxFilters() {
         }
         lightBall(wf * 0.5f + (fx0 - wf * 0.5f) * -0.6f, hf * 0.5f + (fy0 - hf * 0.5f) * -0.6f, 0.1f * s, 0xFF9AD0FF.toInt(), 0.35f)
     }
+    fx("chromatic", "Chromatic", "🌈") {
+        pix(512) { dst, sp, ww, wh ->
+            val n = ww * wh
+            System.arraycopy(sp, 0, dst, 0, n)
+            val shift = (3f * sin(t * 2f)).toInt()
+            for (y in 0 until wh) {
+                val row = y * ww
+                for (x in 0 until ww) {
+                    val i = row + x
+                    val r = (sp[((y + shift).coerceIn(0, wh - 1)) * ww + x] shr 16) and 255
+                    val b = (sp[((y - shift).coerceIn(0, wh - 1)) * ww + x] and 255)
+                    val g = (sp[i] shr 8) and 255
+                    dst[i] = Px.rgb(r, g, b)
+                }
+            }
+        }
+    }
 }
