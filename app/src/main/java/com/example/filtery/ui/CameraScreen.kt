@@ -78,9 +78,9 @@ import kotlinx.coroutines.withContext
 fun CameraScreen(vm: FilteryVm, owner: LifecycleOwner, askPermission: () -> Unit) {
     LaunchedEffect(vm.camGranted) { if (vm.camGranted) vm.ensureCamera(owner) }
 
-    // The picture fills the screen width (9:16, like a phone screen); the buttons sit on top of it.
+    // The camera preview fills the whole screen; UI elements are overlaid on top.
     Box(Modifier.fillMaxSize().background(Color.Black)) {
-        PreviewBox(vm, owner, askPermission, Modifier.fillMaxWidth().aspectRatio(0.5625f).align(Alignment.TopCenter))
+        PreviewBox(vm, owner, askPermission, Modifier.fillMaxSize())
         TopBar(vm, Modifier.align(Alignment.TopCenter))
         Controls(vm, owner, Modifier.align(Alignment.BottomCenter))
     }
