@@ -47,4 +47,28 @@ internal fun MutableList<Fx>.addRealFaces() {
             patch(f.cx, f.cy, r, f.cx + side * f.w * 1.1f, f.cy, 0.9f, 180f + f.rot)
         }
     }
+    fx("noseonforehead", "Nose on Forehead", "👃") {
+        for (f in faces) patch(f.nx, f.ny, f.w * 0.22f, f.hx(0f, -0.38f * f.h), f.hy(0f, -0.38f * f.h), 0.95f, f.rot)
+    }
+    fx("mouthonchin", "Mouth on Chin", "💋") {
+        for (f in faces) patch(f.mx, f.my, f.w * 0.3f, f.hx(0f, 0.42f * f.h), f.hy(0f, 0.42f * f.h), 0.95f, f.rot)
+    }
+    fx("eyesonchin", "Eyes on Chin", "👀") {
+        for (f in faces) for (sg in intArrayOf(-1, 1)) {
+            val sx = if (sg < 0) f.lx else f.rx; val sy = if (sg < 0) f.ly else f.ry
+            patch(sx, sy, f.eyeDist * 0.55f, f.hx(sg * 0.3f * f.w, 0.45f * f.h), f.hy(sg * 0.3f * f.w, 0.45f * f.h), 0.9f, f.rot)
+        }
+    }
+    fx("cheekonnose", "Cheek on Nose", "😊") {
+        for (f in faces) {
+            val cx = (f.lx + f.rx) / 2f; val cy = (f.ly + f.ry) / 2f
+            patch(cx, cy, f.eyeDist * 0.5f, f.nx, f.ny, 1.1f, f.rot)
+        }
+    }
+    fx("chinonforehead", "Chin on Forehead", "🤨") {
+        for (f in faces) {
+            val r = f.w * 0.4f
+            patch(f.cx, f.my + f.h * 0.35f, r, f.hx(0f, -0.4f * f.h), f.hy(0f, -0.4f * f.h), 0.9f, f.rot)
+        }
+    }
 }
