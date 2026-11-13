@@ -825,4 +825,25 @@ internal fun MutableList<Fx>.addFaceFilters() {
             }
         }
     }
+    fx("unibrow", "Unibrow", "🧔") {
+        for (f in faces) {
+            val d = f.eyeDist
+            at(f.ex, f.ey - 0.25f * d, f.rot) {
+                softOval(0f, 0f, 1.1f * d, 0.18f * d, BLACK, 0.3f, 0.08f * d)
+                gradOval(0f, 0f, 1.0f * d, 0.14f * d, col(0xFF3A2A22), col(0xFF120A06))
+                fur(0f, 0f, 1.0f * d, 0.12f * d, 200, 0.08f * d, 0.01f * d, col(0xFF2A1A12), 41, -10f, 20f)
+            }
+        }
+    }
+    fx("clownnose", "Clown Nose", "🤡") {
+        for (f in faces) {
+            val u = f.w
+            val pulse = 1f + 0.1f * sin(t * 6f)
+            at(f.nx, f.ny + 0.05f * u, f.rot) {
+                softOval(0f, 0f, 0.22f * u, 0.22f * u, BLACK, 0.3f, 0.05f * u)
+                gradOval(0f, 0f, 0.2f * u, 0.2f * u, col(0xFFFF5A5A), col(0xFFD00000), 0.9f * pulse)
+                disc(-0.06f * u, -0.06f * u, 0.05f * u, WHITE, 0.6f)
+            }
+        }
+    }
 }
